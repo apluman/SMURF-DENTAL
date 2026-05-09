@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F8F5EE;
+  --surface: #FFFFFF;
+  --sidebar-bg: #0D2218;
+  --sidebar-hover: #152E22;
+  --sidebar-active: #1A3D2B;
+  --accent: #1A7A5E;
+  --accent-hover: #15654E;
+  --accent-subtle: #EAF4EF;
+  --gold: #C8963E;
+  --gold-subtle: #FEF6E7;
+  --ink: #1A1A1A;
+  --ink-muted: #6B6868;
+  --border: #E4DDD0;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body, 'DM Sans'), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Status badge variants */
+.badge-pending  { background: #FEF6E7; color: #92560C; border: 1px solid #F5D58B; }
+.badge-confirmed { background: #EAF4EF; color: #0F5132; border: 1px solid #A8D5BB; }
+.badge-cancelled { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+.badge-completed { background: #F3F4F6; color: #374151; border: 1px solid #D1D5DB; }
+
+/* Keyframes */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(0.95); opacity: 0.6; }
+  50%  { transform: scale(1.05); opacity: 0.3; }
+  100% { transform: scale(0.95); opacity: 0.6; }
+}
+
+.animate-fade-up      { animation: fade-up 0.6s ease both; }
+.animate-fade-in      { animation: fade-in 0.4s ease both; }
+.animate-float        { animation: float 4s ease-in-out infinite; }
+.animate-spin-slow    { animation: spin-slow 20s linear infinite; }
+.animate-pulse-ring   { animation: pulse-ring 2.5s ease-in-out infinite; }
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+
+/* Typography utilities */
+.font-display { font-family: var(--font-display, 'Cormorant Garamond'), Georgia, serif; }
+
+/* Card base */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+/* Stat card accent */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Mobile touch targets */
+@media (max-width: 1024px) {
+  .fc .fc-button { padding: 0.4rem 0.6rem !important; font-size: 0.7rem !important; }
+  .fc .fc-toolbar { flex-wrap: wrap; gap: 0.5rem; }
+  .fc .fc-toolbar-title { font-size: 1rem !important; }
+}
+
+/* FullCalendar overrides */
+.fc { font-family: var(--font-body, 'DM Sans'), system-ui, sans-serif !important; }
+.fc .fc-toolbar-title { font-family: var(--font-display, 'Cormorant Garamond'), Georgia, serif !important; font-size: 1.3rem !important; font-weight: 600 !important; color: var(--ink) !important; }
+.fc .fc-button { background: var(--surface) !important; border: 1px solid var(--border) !important; color: var(--ink) !important; font-size: 0.75rem !important; font-weight: 500 !important; border-radius: 8px !important; padding: 0.35rem 0.75rem !important; box-shadow: none !important; transition: background 0.15s ease !important; }
+.fc .fc-button:hover { background: var(--bg) !important; }
+.fc .fc-button-primary:not(:disabled).fc-button-active { background: var(--accent) !important; border-color: var(--accent) !important; color: white !important; }
+.fc .fc-button-group .fc-button { border-radius: 0 !important; }
+.fc .fc-button-group .fc-button:first-child { border-radius: 8px 0 0 8px !important; }
+.fc .fc-button-group .fc-button:last-child { border-radius: 0 8px 8px 0 !important; }
+.fc .fc-col-header-cell { background: var(--bg) !important; border-color: var(--border) !important; }
+.fc .fc-col-header-cell-cushion { font-size: 0.7rem !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; color: var(--ink-muted) !important; padding: 8px 4px !important; text-decoration: none !important; }
+.fc .fc-timegrid-slot { border-color: var(--border) !important; }
+.fc .fc-timegrid-slot-label { font-size: 0.7rem !important; color: var(--ink-muted) !important; }
+.fc .fc-scrollgrid { border-color: var(--border) !important; border-radius: 8px !important; }
+.fc .fc-scrollgrid td, .fc .fc-scrollgrid th { border-color: var(--border) !important; }
+.fc .fc-event { border-radius: 6px !important; border-left-width: 3px !important; font-size: 0.72rem !important; font-weight: 500 !important; cursor: pointer !important; }
+.fc .fc-event-title { font-weight: 500 !important; }
+.fc .fc-daygrid-event { border-radius: 6px !important; }
+.fc .fc-today-button { background: var(--accent-subtle) !important; border-color: var(--accent) !important; color: var(--accent) !important; font-weight: 600 !important; }
+.fc .fc-day-today { background: rgba(26,122,94,0.04) !important; }
+.fc .fc-timegrid-now-indicator-line { border-color: var(--accent) !important; }
+.fc .fc-timegrid-now-indicator-arrow { border-color: var(--accent) !important; }
+.fc-theme-standard .fc-list-day-cushion { background: var(--bg) !important; }
+.fc .fc-daygrid-day-number { color: var(--ink) !important; font-size: 0.8rem !important; text-decoration: none !important; }
+
+/* Table row hover */
+.tr-hover { transition: background 0.1s ease; }
+.tr-hover:hover { background: var(--bg) !important; }
+
+/* Input overrides */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-subtle), 0 0 0 3px var(--accent);
+  border-color: var(--accent) !important;
+}
