@@ -31,7 +31,9 @@ export async function loadSecretsFromVault(): Promise<void> {
     return;
   }
 
-  const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+  const credential = new ClientSecretCredential(tenantId, clientId, clientSecret, {
+    additionallyAllowedTenants: ["*"],
+  });
   const client = new SecretClient(vaultUrl, credential);
 
   await Promise.all(
