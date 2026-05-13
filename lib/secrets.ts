@@ -14,40 +14,37 @@ let loaded = false;
 
 export async function loadSecretsFromVault(): Promise<void> {
   if (loaded) return;
+  loaded = true; // mark early so a crash doesn't leave the app in a retry loop
 
-  const vaultUrl = process.env.AZURE_KEY_VAULT_URL;
-  if (!vaultUrl) {
-    // No KV configured — fall back to Vercel env vars silently
-    loaded = true;
-    return;
-  }
-
+  const vaultUrl     = process.env.AZURE_KEY_VAULT_URL;
   const tenantId     = process.env.AZURE_TENANT_ID;
   const clientId     = process.env.AZURE_CLIENT_ID;
   const clientSecret = process.env.AZURE_CLIENT_SECRET;
 
-  if (!tenantId || !clientId || !clientSecret) {
-    console.warn("[Azure KV] Missing AZURE_TENANT_ID, AZURE_CLIENT_ID, or AZURE_CLIENT_SECRET — skipping vault load.");
-    loaded = true;
+  if (!vaultUrl || !tenantId || !clientId || !clientSecret) {
+    console.warn("[Azure KV] Missing config — falling back to Vercel env vars.");
     return;
   }
 
-  const credential = new ClientSecretCredential(tenantId, clientId, clientSecret, {
-    additionallyAllowedTenants: ["*"],
-  });
-  const client = new SecretClient(vaultUrl, credential);
+  try {
+    const credential = new ClientSecretCredential(tenantId, clientId, clientSecret, {
+      additionallyAllowedTenants: ["*"],
+    });
+    const client = new SecretClient(vaultUrl, credential);
 
-  await Promise.all(
-    Object.entries(SECRET_MAP).map(async ([kvName, envName]) => {
-      try {
-        const secret = await client.getSecret(kvName);
-        if (secret.value) process.env[envName] = secret.value;
-      } catch (err) {
-        console.warn(`[Azure KV] Could not fetch secret "${kvName}" — falling back to env var.`, err);
-      }
-    })
-  );
+    await Promise.all(
+      Object.entries(SECRET_MAP).map(async ([kvName, envName]) => {
+        try {
+          const secret = await client.getSecret(kvName);
+          if (secret.value) process.env[envName] = secret.value;
+        } catch (err) {
+          console.warn(`[Azure KV] Could not fetch "${kvName}" — using env var fallback.`, err);
+        }
+      })
+    );
 
-  loaded = true;
-  console.log("[Azure KV] Secrets loaded successfully.");
+    console.log("[Azure KV] Secrets loaded successfully.");
+  } catch (err) {
+    console.error("[Azure KV] Auth failed — falling back to Vercel env vars.", err);
+  }
 }
