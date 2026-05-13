@@ -5,6 +5,12 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit } from "@/lib/ratelimit";
 import { redirect } from "next/navigation";
 
+export async function logoutAction() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/login");
+}
+
 export async function loginAction(email: string, password: string) {
   const { allowed } = await checkRateLimit(`login:${email.toLowerCase()}`);
   if (!allowed) {

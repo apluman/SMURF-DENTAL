@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Profile } from "@/types";
+import { logoutAction } from "@/app/actions/auth";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -179,7 +180,7 @@ export default function Sidebar({ profile }: { profile: Profile | null }) {
             </p>
           </div>
         </div>
-        <form action="/api/auth/logout" method="POST">
+        <form action={logoutAction}>
           <button
             type="submit"
             className="flex items-center gap-2 text-xs font-medium w-full px-3 py-2 rounded-lg transition-all duration-150"
