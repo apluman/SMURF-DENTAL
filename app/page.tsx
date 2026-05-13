@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ChatWidget from "@/components/chat/ChatWidget";
 
 function ToothIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
@@ -204,6 +205,8 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      <ChatWidget />
     </main>
   );
 }
