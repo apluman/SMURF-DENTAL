@@ -3,10 +3,11 @@ import { ClientSecretCredential } from "@azure/identity";
 
 // Azure KV secret name → process.env key
 const SECRET_MAP: Record<string, string> = {
-  "SUPABASE-SERVICE-ROLE-KEY": "SUPABASE_SERVICE_ROLE_KEY",
-  "GOOGLE-CLIENT-SECRET":      "GOOGLE_CLIENT_SECRET",
-  "SMTP-PASS":                 "SMTP_PASS",
-  "ENCRYPTION-KEY":            "ENCRYPTION_KEY",
+  "SUPABASE-SERVICE-ROLE-KEY":  "SUPABASE_SERVICE_ROLE_KEY",
+  "GOOGLE-CLIENT-SECRET":       "GOOGLE_CLIENT_SECRET",
+  "SMTP-PASS":                  "SMTP_PASS",
+  "ENCRYPTION-KEY":             "ENCRYPTION_KEY",
+  "UPSTASH-REDIS-REST-TOKEN":   "UPSTASH_REDIS_REST_TOKEN",
 };
 
 let loaded = false;
