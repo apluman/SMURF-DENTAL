@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { auditLog, getIp } from "@/lib/audit";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -15,15 +16,16 @@ async function requireAdmin() {
   const admin = createAdminClient();
   const { data: profile } = await admin.from("profiles").select("role").eq("id", user.id).single();
   if (profile?.role !== "admin") return null;
-  return admin;
+  return { admin, userId: user.id };
 }
 
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const result = await requireAdmin();
+  if (!result) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const { admin } = result;
 
   const { id } = await params;
   const body: unknown = await request.json();
@@ -42,11 +44,12 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const result = await requireAdmin();
+  if (!result) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const { admin, userId } = result;
 
   const { id } = await params;
 
@@ -58,6 +61,15 @@ export async function DELETE(
   if (dentist?.profile_id) {
     await admin.from("profiles").update({ role: "patient" }).eq("id", dentist.profile_id);
   }
+
+  await auditLog({
+    userId,
+    action: "dentist.removed",
+    resourceType: "dentist",
+    resourceId: id,
+    metadata: { profile_id: dentist?.profile_id },
+    ipAddress: getIp(request),
+  });
 
   return NextResponse.json({ success: true });
 }

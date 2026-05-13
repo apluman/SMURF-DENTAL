@@ -16,6 +16,7 @@ import {
   UserCircle,
   LogOut,
   UserCog,
+  ScrollText,
 } from "lucide-react";
 
 const ICONS: Record<string, React.ElementType> = {
@@ -29,6 +30,7 @@ const ICONS: Record<string, React.ElementType> = {
   Profile: UserCircle,
   Patients: Users,
   Receptionists: UserCog,
+  "Audit Log": ScrollText,
 };
 
 const NAV: Record<string, { label: string; href: string }[]> = {
@@ -39,6 +41,7 @@ const NAV: Record<string, { label: string; href: string }[]> = {
     { label: "Receptionists", href: "/admin/receptionists" },
     { label: "Services", href: "/admin/services" },
     { label: "Settings", href: "/admin/settings" },
+    { label: "Audit Log", href: "/admin/audit-log" },
   ],
   dentist: [
     { label: "Dashboard", href: "/dentist/dashboard" },

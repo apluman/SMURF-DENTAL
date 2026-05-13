@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { auditLog, getIp } from "@/lib/audit";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -26,5 +27,14 @@ export async function POST(request: Request) {
     .eq("id", parsed.data.profile_id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await auditLog({
+    userId: user.id,
+    action: "receptionist.added",
+    resourceType: "profile",
+    resourceId: parsed.data.profile_id,
+    ipAddress: getIp(request),
+  });
+
   return NextResponse.json({ success: true }, { status: 201 });
 }

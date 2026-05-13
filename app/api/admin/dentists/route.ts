@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { auditLog, getIp } from "@/lib/audit";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -35,5 +36,15 @@ export async function POST(request: Request) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await auditLog({
+    userId: user.id,
+    action: "dentist.added",
+    resourceType: "dentist",
+    resourceId: data.id,
+    metadata: { profile_id: parsed.data.profile_id, specialization: parsed.data.specialization },
+    ipAddress: getIp(request),
+  });
+
   return NextResponse.json(data, { status: 201 });
 }

@@ -7,6 +7,7 @@ import {
   deleteCalendarEvent,
 } from "@/lib/google-calendar";
 import { sendStatusUpdate } from "@/lib/email";
+import { auditLog, getIp } from "@/lib/audit";
 import { NextResponse } from "next/server";
 import { addMinutes, parseISO } from "date-fns";
 
@@ -56,6 +57,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await auditLog({
+    userId: user.id,
+    action: "appointment.updated",
+    resourceType: "appointment",
+    resourceId: id,
+    metadata: { changes: parsed.data, role },
+    ipAddress: getIp(request),
+  });
 
   // Sync calendar
   try {

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { auditLog, getIp } from "@/lib/audit";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -33,5 +34,14 @@ export async function PATCH(request: Request) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await auditLog({
+    userId: user.id,
+    action: "settings.updated",
+    resourceType: "clinic_settings",
+    metadata: { changes: parsed.data },
+    ipAddress: getIp(request),
+  });
+
   return NextResponse.json(data);
 }

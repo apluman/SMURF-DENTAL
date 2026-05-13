@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { auditLog, getIp } from "@/lib/audit";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -20,6 +21,7 @@ async function requireAdmin() {
   return profile?.role === "admin" ? user : null;
 }
 
+
 export async function POST(request: Request) {
   const user = await requireAdmin();
   if (!user) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -31,6 +33,16 @@ export async function POST(request: Request) {
   const admin = createAdminClient();
   const { data, error } = await admin.from("services").insert(parsed.data).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await auditLog({
+    userId: user.id,
+    action: "service.created",
+    resourceType: "service",
+    resourceId: data.id,
+    metadata: { name: parsed.data.name },
+    ipAddress: getIp(request),
+  });
+
   return NextResponse.json(data, { status: 201 });
 }
 
@@ -46,5 +58,15 @@ export async function PATCH(request: Request) {
   const admin = createAdminClient();
   const { data, error } = await admin.from("services").update(parsed.data).eq("id", id).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await auditLog({
+    userId: user.id,
+    action: "service.updated",
+    resourceType: "service",
+    resourceId: id,
+    metadata: { changes: parsed.data },
+    ipAddress: getIp(request),
+  });
+
   return NextResponse.json(data);
 }

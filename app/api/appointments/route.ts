@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createAppointmentSchema } from "@/lib/validations/appointment";
 import { createCalendarEvent } from "@/lib/google-calendar";
 import { sendBookingConfirmation } from "@/lib/email";
+import { auditLog, getIp } from "@/lib/audit";
 import { NextResponse } from "next/server";
 import { addMinutes, parseISO } from "date-fns";
 
@@ -23,6 +24,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const ip = getIp(request);
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -73,6 +75,15 @@ export async function POST(request: Request) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await auditLog({
+    userId: user.id,
+    action: "appointment.created",
+    resourceType: "appointment",
+    resourceId: data.id,
+    metadata: { dentist_id: data.dentist_id, service_id: data.service_id, scheduled_date: data.scheduled_date },
+    ipAddress: ip,
+  });
 
   // Sync to Google Calendar if dentist has connected
   try {

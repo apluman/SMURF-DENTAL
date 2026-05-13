@@ -3,10 +3,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit } from "@/lib/ratelimit";
+import { auditLog } from "@/lib/audit";
 import { redirect } from "next/navigation";
 
 export async function logoutAction() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) await auditLog({ userId: user.id, action: "auth.logout" });
   await supabase.auth.signOut();
   redirect("/login");
 }
@@ -33,5 +36,6 @@ export async function loginAction(email: string, password: string) {
     .single();
 
   const role = profile?.role ?? "patient";
+  await auditLog({ userId: user.id, action: "auth.login", metadata: { role } });
   redirect(`/${role}/dashboard`);
 }
