@@ -6,7 +6,7 @@ import { checkRateLimit } from "@/lib/ratelimit";
 import { redirect } from "next/navigation";
 
 export async function loginAction(email: string, password: string) {
-  const { allowed } = checkRateLimit(`login:${email.toLowerCase()}`);
+  const { allowed } = await checkRateLimit(`login:${email.toLowerCase()}`);
   if (!allowed) {
     return { error: "Too many login attempts. Please try again in 15 minutes." };
   }
