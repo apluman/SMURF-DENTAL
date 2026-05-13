@@ -1,20 +1,37 @@
-import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/patient/dashboard";
 
   if (code) {
-    const supabase = await createClient();
+    const forwardedHost = request.headers.get("x-forwarded-host");
+    const base = forwardedHost ? `https://${forwardedHost}` : origin;
+
+    // Build the redirect response first so we can attach cookies to it
+    const redirectResponse = NextResponse.redirect(`${base}${next}`);
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              redirectResponse.cookies.set(name, value, options);
+            });
+          },
+        },
+      }
+    );
+
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      // Use x-forwarded-host on Vercel to get the real public hostname
-      const forwardedHost = request.headers.get("x-forwarded-host");
-      const base = forwardedHost ? `https://${forwardedHost}` : origin;
-      return NextResponse.redirect(`${base}${next}`);
-    }
+    if (!error) return redirectResponse;
   }
 
   return NextResponse.redirect(`${origin}/login?error=auth_failed`);
