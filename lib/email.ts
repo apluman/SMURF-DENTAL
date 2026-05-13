@@ -2,15 +2,17 @@ import nodemailer from "nodemailer";
 import { format } from "date-fns";
 import type { AppointmentStatus } from "@/types";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+function getTransporter() {
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+}
 
 interface AppointmentEmailData {
   patientName: string;
@@ -98,7 +100,7 @@ export async function sendBookingConfirmation(data: AppointmentEmailData) {
       We will notify you once your appointment is confirmed. If you have questions, please contact the clinic directly.
     </p>`;
 
-  await transporter.sendMail({
+  await getTransporter().sendMail({
     from: `"Smurf Dental Clinic" <${process.env.EMAIL_FROM}>`,
     to: data.patientEmail,
     subject: "Appointment Request Received — Smurf Dental Clinic",
@@ -145,7 +147,7 @@ export async function sendStatusUpdate(
       ${detailRow("Time", escapeHtml(formatTime(data.scheduledTime)))}
     </table>`;
 
-  await transporter.sendMail({
+  await getTransporter().sendMail({
     from: `"Smurf Dental Clinic" <${process.env.EMAIL_FROM}>`,
     to: data.patientEmail,
     subject: config.subject,
