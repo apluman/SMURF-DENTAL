@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
+import SessionMonitor from "./SessionMonitor";
 import type { Profile } from "@/types";
 
 function MenuIcon() {
@@ -98,6 +99,8 @@ export default function DashboardShell({
           {children}
         </main>
       </div>
+
+      <SessionMonitor />
     </div>
   );
 }

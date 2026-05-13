@@ -6,6 +6,23 @@ import { checkRateLimit } from "@/lib/ratelimit";
 import { auditLog } from "@/lib/audit";
 import { redirect } from "next/navigation";
 
+export async function forgotPasswordAction(email: string): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://smurf-dental.vercel.app";
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${baseUrl}/auth/callback?next=/reset-password`,
+  });
+  if (error) return { error: error.message };
+  return {};
+}
+
+export async function resetPasswordAction(password: string): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { error: error.message };
+  return {};
+}
+
 export async function logoutAction() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
