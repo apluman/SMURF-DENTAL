@@ -5,17 +5,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import Link from "next/link";
 
 export default function RegisterForm() {
-  const router = useRouter();
   const [consent, setConsent] = useState(false);
   const [consentError, setConsentError] = useState(false);
+  const [verified, setVerified] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
@@ -28,21 +27,63 @@ export default function RegisterForm() {
       return;
     }
     setConsentError(false);
+
     const supabase = createClient();
+    const redirectTo = `${window.location.origin}/auth/callback?next=/patient/dashboard`;
+
     const { error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
         data: { full_name: data.full_name, phone: data.phone, role: "patient" },
+        emailRedirectTo: redirectTo,
       },
     });
+
     if (error) {
-      toast.error(error.message);
+      form.setError("root", { message: error.message });
       return;
     }
-    toast.success("Account created! Redirecting...");
-    router.push("/dashboard");
-    router.refresh();
+
+    setRegisteredEmail(data.email);
+    setVerified(true);
+  }
+
+  if (verified) {
+    return (
+      <div style={{ textAlign: "center", padding: "1rem 0" }}>
+        <div style={{
+          width: "52px", height: "52px", borderRadius: "50%",
+          background: "rgba(16,185,129,0.12)", display: "flex",
+          alignItems: "center", justifyContent: "center", margin: "0 auto 1.25rem",
+        }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <h2 style={{ fontSize: "1.125rem", fontWeight: 600, color: "var(--ink)", marginBottom: "0.5rem" }}>
+          Check your email
+        </h2>
+        <p style={{ fontSize: "0.875rem", color: "var(--ink-muted)", lineHeight: 1.6, marginBottom: "0.25rem" }}>
+          We sent a verification link to
+        </p>
+        <p style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--accent)", marginBottom: "1.25rem" }}>
+          {registeredEmail}
+        </p>
+        <p style={{ fontSize: "0.8125rem", color: "var(--ink-muted)", lineHeight: 1.6 }}>
+          Click the link in the email to activate your account. Check your spam folder if you don&apos;t see it.
+        </p>
+        <div style={{ marginTop: "1.5rem", paddingTop: "1.25rem", borderTop: "1px solid var(--border)" }}>
+          <p style={{ fontSize: "0.8125rem", color: "var(--ink-muted)" }}>
+            Already verified?{" "}
+            <Link href="/login" style={{ color: "var(--accent)", fontWeight: 500 }}>
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </div>
+    );
   }
 
   const fields: { name: keyof RegisterInput; label: string; type: string; placeholder: string }[] = [
@@ -96,6 +137,12 @@ export default function RegisterForm() {
             </p>
           )}
         </div>
+
+        {form.formState.errors.root && (
+          <p style={{ color: "#DC2626", fontSize: "0.875rem" }}>
+            {form.formState.errors.root.message}
+          </p>
+        )}
 
         <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting ? "Creating account..." : "Create Account"}
