@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTransition } from "react";
 import type { Profile } from "@/types";
 import { logoutAction } from "@/app/actions/auth";
 import {
@@ -84,6 +85,7 @@ function getInitials(name: string) {
 
 export default function Sidebar({ profile }: { profile: Profile | null }) {
   const pathname = usePathname();
+  const [pending, startTransition] = useTransition();
   const role = profile?.role ?? "patient";
   const links = NAV[role] ?? [];
   const roleColor = ROLE_COLORS[role] ?? "#E5E7EB";
@@ -180,22 +182,25 @@ export default function Sidebar({ profile }: { profile: Profile | null }) {
             </p>
           </div>
         </div>
-        <form action={logoutAction}>
+        <form action={() => startTransition(() => logoutAction())}>
           <button
             type="submit"
+            disabled={pending}
             className="flex items-center gap-2 text-xs font-medium w-full px-3 py-2 rounded-lg transition-all duration-150"
-            style={{ color: "rgba(255,255,255,0.35)" }}
+            style={{ color: pending ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.35)", cursor: pending ? "not-allowed" : "pointer" }}
             onMouseEnter={e => {
+              if (pending) return;
               (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.12)";
               (e.currentTarget as HTMLElement).style.color = "#FCA5A5";
             }}
             onMouseLeave={e => {
+              if (pending) return;
               (e.currentTarget as HTMLElement).style.background = "transparent";
               (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.35)";
             }}
           >
             <LogOut size={13} />
-            Sign out
+            {pending ? "Signing out…" : "Sign out"}
           </button>
         </form>
       </div>
