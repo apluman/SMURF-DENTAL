@@ -7,9 +7,9 @@ const VALID_FILTERS = ["all", "pending", "confirmed", "cancelled", "completed"];
 export default async function AdminAppointmentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; filter?: string }>;
+  searchParams: Promise<{ page?: string; filter?: string; from?: string; to?: string }>;
 }) {
-  const { page: pageStr = "1", filter: rawFilter = "all" } = await searchParams;
+  const { page: pageStr = "1", filter: rawFilter = "all", from = "", to = "" } = await searchParams;
   const filter = VALID_FILTERS.includes(rawFilter) ? rawFilter : "all";
   const page = Math.max(1, parseInt(pageStr, 10) || 1);
   const offset = (page - 1) * PAGE_SIZE;
@@ -25,9 +25,9 @@ export default async function AdminAppointmentsPage({
     .order("scheduled_date", { ascending: false })
     .range(offset, offset + PAGE_SIZE - 1);
 
-  if (filter !== "all") {
-    query = query.eq("status", filter);
-  }
+  if (filter !== "all") query = query.eq("status", filter);
+  if (from) query = query.gte("scheduled_date", from);
+  if (to)   query = query.lte("scheduled_date", to);
 
   const { data: appointments, count } = await query;
   const totalPages = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
@@ -44,16 +44,19 @@ export default async function AdminAppointmentsPage({
         </h1>
         <p className="text-sm" style={{ color: "var(--ink-muted)" }}>
           {count ?? 0} total record{count !== 1 ? "s" : ""}
-          {filter !== "all" ? ` · filtered by ${filter}` : ""}
+          {filter !== "all" ? ` · ${filter}` : ""}
+          {from || to ? ` · ${from || "…"} → ${to || "…"}` : ""}
         </p>
       </div>
       <AdminAppointmentsTable
-        key={`${filter}-${safePage}`}
+        key={`${filter}-${safePage}-${from}-${to}`}
         appointments={appointments ?? []}
         page={safePage}
         totalPages={totalPages}
         total={count ?? 0}
         filter={filter}
+        from={from}
+        to={to}
       />
     </div>
   );

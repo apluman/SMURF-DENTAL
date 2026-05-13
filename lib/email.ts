@@ -154,3 +154,27 @@ export async function sendStatusUpdate(
     html: baseTemplate(config.headline, body),
   });
 }
+
+export async function sendReminderEmail(data: AppointmentEmailData) {
+  const body = `
+    <p style="margin:0 0 20px;font-size:14px;color:#374151;">
+      Hi ${escapeHtml(data.patientName)}, this is a friendly reminder about your appointment tomorrow.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="width:100%;border-top:1px solid #e5e7eb;margin-bottom:20px;">
+      ${detailRow("Dentist", `Dr. ${escapeHtml(data.dentistName)}`)}
+      ${detailRow("Service", escapeHtml(data.serviceName))}
+      ${detailRow("Date", escapeHtml(formatDate(data.scheduledDate)))}
+      ${detailRow("Time", escapeHtml(formatTime(data.scheduledTime)))}
+      ${data.notes ? detailRow("Notes", escapeHtml(data.notes)) : ""}
+    </table>
+    <p style="margin:0;font-size:14px;color:#374151;">
+      Please arrive 5–10 minutes early. If you need to cancel, please do so at least 24 hours in advance through the patient portal.
+    </p>`;
+
+  await getTransporter().sendMail({
+    from: `"Smurf Dental Clinic" <${process.env.EMAIL_FROM}>`,
+    to: data.patientEmail,
+    subject: "Appointment Reminder — Tomorrow at Smurf Dental Clinic",
+    html: baseTemplate("Appointment Reminder", body),
+  });
+}

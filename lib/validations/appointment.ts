@@ -9,8 +9,10 @@ export const createAppointmentSchema = z.object({
 });
 
 export const updateAppointmentSchema = z.object({
-  status: z.enum(["pending", "confirmed", "cancelled", "completed"]),
+  status: z.enum(["pending", "confirmed", "cancelled", "completed"]).optional(),
   notes: z.string().max(500).optional(),
+}).refine((d) => d.status !== undefined || d.notes !== undefined, {
+  message: "Provide at least status or notes",
 });
 
 export type CreateAppointmentInput = z.infer<typeof createAppointmentSchema>;

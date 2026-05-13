@@ -62,6 +62,8 @@ export default async function ReceptionistAppointmentsPage({
         totalPages={totalPages}
         total={count ?? 0}
         filter={filter}
+        from=""
+        to=""
       />
     </div>
   );

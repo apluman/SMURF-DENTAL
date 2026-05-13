@@ -32,11 +32,15 @@ interface Props {
   totalPages: number;
   total: number;
   filter: string;
+  from: string;
+  to: string;
 }
 
-export default function AdminAppointmentsTable({ appointments, page, totalPages, total, filter }: Props) {
+export default function AdminAppointmentsTable({ appointments, page, totalPages, total, filter, from, to }: Props) {
   const router = useRouter();
   const [updating, setUpdating] = useState<string | null>(null);
+  const [fromDate, setFromDate] = useState(from);
+  const [toDate, setToDate] = useState(to);
   const [statuses, setStatuses] = useState<Record<string, string>>(
     Object.fromEntries(appointments.map((a) => [a.id, a.status]))
   );
@@ -59,13 +63,38 @@ export default function AdminAppointmentsTable({ appointments, page, totalPages,
     setUpdating(null);
   }
 
-  const filterHref = (f: string) => `?filter=${f}&page=1`;
-  const pageHref = (p: number) => `?filter=${filter}&page=${p}`;
+  function applyDateFilter() {
+    const params = new URLSearchParams();
+    params.set("filter", filter);
+    params.set("page", "1");
+    if (fromDate) params.set("from", fromDate);
+    if (toDate) params.set("to", toDate);
+    router.push(`?${params.toString()}`);
+  }
+
+  function clearDateFilter() {
+    setFromDate("");
+    setToDate("");
+    router.push(`?filter=${filter}&page=1`);
+  }
+
+  const filterHref = (f: string) => {
+    const params = new URLSearchParams({ filter: f, page: "1" });
+    if (fromDate) params.set("from", fromDate);
+    if (toDate) params.set("to", toDate);
+    return `?${params.toString()}`;
+  };
+  const pageHref = (p: number) => {
+    const params = new URLSearchParams({ filter, page: String(p) });
+    if (from) params.set("from", from);
+    if (to) params.set("to", to);
+    return `?${params.toString()}`;
+  };
 
   return (
     <div>
       {/* Filter tabs */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-3">
         {FILTER_TABS.map((f) => (
           <Link
             key={f}
@@ -81,6 +110,49 @@ export default function AdminAppointmentsTable({ appointments, page, totalPages,
             {f}
           </Link>
         ))}
+      </div>
+
+      {/* Date range filter */}
+      <div style={{ display: "flex", gap: "0.625rem", alignItems: "center", flexWrap: "wrap", marginBottom: "1rem" }}>
+        <input
+          type="date"
+          value={fromDate}
+          onChange={(e) => setFromDate(e.target.value)}
+          style={{
+            padding: "0.375rem 0.625rem", borderRadius: "0.5rem", fontSize: "0.8125rem",
+            border: "1px solid var(--border)", background: "var(--bg)", color: "var(--ink)",
+          }}
+        />
+        <span style={{ fontSize: "0.75rem", color: "var(--ink-muted)" }}>to</span>
+        <input
+          type="date"
+          value={toDate}
+          onChange={(e) => setToDate(e.target.value)}
+          style={{
+            padding: "0.375rem 0.625rem", borderRadius: "0.5rem", fontSize: "0.8125rem",
+            border: "1px solid var(--border)", background: "var(--bg)", color: "var(--ink)",
+          }}
+        />
+        <button
+          onClick={applyDateFilter}
+          style={{
+            padding: "0.375rem 0.875rem", borderRadius: "0.5rem", fontSize: "0.8125rem",
+            background: "var(--accent)", color: "white", border: "none", cursor: "pointer", fontWeight: 500,
+          }}
+        >
+          Apply
+        </button>
+        {(from || to) && (
+          <button
+            onClick={clearDateFilter}
+            style={{
+              padding: "0.375rem 0.875rem", borderRadius: "0.5rem", fontSize: "0.8125rem",
+              background: "transparent", color: "var(--ink-muted)", border: "1px solid var(--border)", cursor: "pointer",
+            }}
+          >
+            Clear
+          </button>
+        )}
       </div>
 
       <div className="rounded-xl border bg-card overflow-hidden">
