@@ -20,6 +20,85 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { data: profile } = await admin.from("profiles").select("role").eq("id", user.id).single();
   const role = profile?.role ?? "";
 
+  const { id } = await params;
+
+  // Patients can only cancel their own appointments, 24hr+ in advance
+  if (role === "patient") {
+    const { data: appt } = await admin
+      .from("appointments")
+      .select("patient_id, status, scheduled_date, scheduled_time")
+      .eq("id", id)
+      .single();
+
+    if (!appt || appt.patient_id !== user.id) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    if (!["pending", "confirmed"].includes(appt.status)) {
+      return NextResponse.json({ error: "This appointment cannot be cancelled" }, { status: 400 });
+    }
+
+    const apptDateTime = new Date(`${appt.scheduled_date}T${appt.scheduled_time}`);
+    const hoursUntil = (apptDateTime.getTime() - Date.now()) / (1000 * 60 * 60);
+    if (hoursUntil < 24) {
+      return NextResponse.json({ error: "Appointments cannot be cancelled within 24 hours of the scheduled time" }, { status: 400 });
+    }
+
+    const { data, error } = await admin
+      .from("appointments")
+      .update({ status: "cancelled" })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    await auditLog({
+      userId: user.id,
+      action: "appointment.cancelled",
+      resourceType: "appointment",
+      resourceId: id,
+      metadata: { cancelled_by: "patient" },
+      ipAddress: getIp(request),
+    });
+
+    // Remove from Google Calendar
+    try {
+      const { data: dentist } = await admin
+        .from("dentists")
+        .select("google_refresh_token, google_calendar_id")
+        .eq("id", data.dentist_id)
+        .single();
+      if (dentist?.google_refresh_token && dentist?.google_calendar_id && data.google_event_id) {
+        await deleteCalendarEvent(dentist.google_refresh_token, dentist.google_calendar_id, data.google_event_id);
+        await admin.from("appointments").update({ google_event_id: null }).eq("id", id);
+      }
+    } catch { /* non-fatal */ }
+
+    // Send cancellation email
+    try {
+      const { data: details } = await admin
+        .from("appointments")
+        .select("*, patient:profiles(*), dentist:dentists(*, profile:profiles(*)), service:services(*)")
+        .eq("id", id)
+        .single();
+      if (details?.patient?.email) {
+        await sendStatusUpdate(
+          {
+            patientName: details.patient.full_name,
+            patientEmail: details.patient.email,
+            dentistName: details.dentist.profile.full_name,
+            serviceName: details.service.name,
+            scheduledDate: details.scheduled_date,
+            scheduledTime: details.scheduled_time,
+          },
+          "cancelled"
+        );
+      }
+    } catch { /* non-fatal */ }
+
+    return NextResponse.json(data);
+  }
+
   if (!["admin", "receptionist", "dentist"].includes(role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -27,8 +106,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const body: unknown = await request.json();
   const parsed = updateAppointmentSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
-
-  const { id } = await params;
 
   // Dentists can only update their own appointments and only to confirmed/completed
   if (role === "dentist") {

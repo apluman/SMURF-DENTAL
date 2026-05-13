@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { format } from "date-fns";
+import CancelAppointmentButton from "@/components/patient/CancelAppointmentButton";
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   confirmed: { label: "Confirmed", cls: "badge-confirmed" },
@@ -160,9 +161,16 @@ export default async function PatientAppointmentsPage({
                     </div>
                   </div>
 
-                  <span className={`flex-shrink-0 inline-flex px-2.5 py-1 rounded-full text-[11px] font-semibold capitalize ${status?.cls ?? "badge-completed"}`}>
-                    {status?.label ?? appt.status}
-                  </span>
+                  <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                    <span className={`inline-flex px-2.5 py-1 rounded-full text-[11px] font-semibold capitalize ${status?.cls ?? "badge-completed"}`}>
+                      {status?.label ?? appt.status}
+                    </span>
+                    {["pending", "confirmed"].includes(appt.status) && (() => {
+                      const apptDateTime = new Date(`${appt.scheduled_date}T${appt.scheduled_time}`);
+                      const hoursUntil = (apptDateTime.getTime() - Date.now()) / (1000 * 60 * 60);
+                      return hoursUntil >= 24 ? <CancelAppointmentButton appointmentId={appt.id} /> : null;
+                    })()}
+                  </div>
                 </div>
               );
             })}
