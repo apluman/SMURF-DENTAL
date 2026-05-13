@@ -1,14 +1,10 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-// In-memory fallback for local dev (no Upstash env vars)
+// In-memory fallback for local dev or if Upstash is unavailable
 const localStore = new Map<string, { count: number; resetAt: number }>();
 
-function checkLocal(
-  key: string,
-  maxAttempts: number,
-  windowMs: number
-): boolean {
+function checkLocal(key: string, maxAttempts: number, windowMs: number): boolean {
   const now = Date.now();
   const entry = localStore.get(key);
   if (!entry || now > entry.resetAt) {
@@ -20,31 +16,37 @@ function checkLocal(
   return true;
 }
 
-let ratelimit: Ratelimit | null = null;
-
-function getRatelimit(): Ratelimit | null {
-  if (ratelimit) return ratelimit;
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+function buildRatelimit(): Ratelimit | null {
+  const url   = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  try {
+    return new Ratelimit({
+      redis: new Redis({ url, token }),
+      limiter: Ratelimit.slidingWindow(5, "15 m"),
+      prefix: "smurf-dental",
+    });
+  } catch {
     return null;
   }
-  ratelimit = new Ratelimit({
-    redis: Redis.fromEnv(),
-    limiter: Ratelimit.slidingWindow(5, "15 m"),
-    prefix: "smurf-dental",
-  });
-  return ratelimit;
 }
 
 export async function checkRateLimit(
   key: string,
   { maxAttempts = 5, windowMs = 15 * 60 * 1000 } = {}
 ): Promise<{ allowed: boolean }> {
-  const rl = getRatelimit();
+  // Build fresh each call so KV-loaded env vars are always picked up
+  const rl = buildRatelimit();
 
   if (!rl) {
     return { allowed: checkLocal(key, maxAttempts, windowMs) };
   }
 
-  const { success } = await rl.limit(key);
-  return { allowed: success };
+  try {
+    const { success } = await rl.limit(key);
+    return { allowed: success };
+  } catch (err) {
+    console.warn("[ratelimit] Upstash error, falling back to in-memory:", err);
+    return { allowed: checkLocal(key, maxAttempts, windowMs) };
+  }
 }
