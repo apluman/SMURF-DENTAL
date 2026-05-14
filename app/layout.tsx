@@ -32,28 +32,6 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: `
-          // Polyfills for Safari 16 and below
-          if (typeof Promise.withResolvers === 'undefined') {
-            Promise.withResolvers = function() {
-              var resolve, reject;
-              var promise = new Promise(function(res, rej) { resolve = res; reject = rej; });
-              return { promise: promise, resolve: resolve, reject: reject };
-            };
-          }
-          if (typeof Array.fromAsync === 'undefined') {
-            Array.fromAsync = async function(iter) {
-              var result = [];
-              for await (var item of iter) result.push(item);
-              return result;
-            };
-          }
-          if (typeof structuredClone === 'undefined') {
-            structuredClone = function(val) { return JSON.parse(JSON.stringify(val)); };
-          }
-        `}} />
-      </head>
       <body>
         {children}
         <Toaster richColors position="top-right" />
