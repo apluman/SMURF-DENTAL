@@ -110,12 +110,26 @@ export default function ChatWidget() {
           70%  { transform: scale(1.08); }
           100% { transform: scale(1); opacity: 1; }
         }
+        .chat-btn {
+          bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+        }
+        .chat-window {
+          bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important;
+        }
+        @media (max-width: 768px) {
+          .chat-btn {
+            bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+          }
+          .chat-window {
+            bottom: calc(148px + env(safe-area-inset-bottom, 0px)) !important;
+          }
+        }
       `}</style>
 
       {/* Chat window */}
       {open && (
-        <div style={{
-          position: "fixed", bottom: "calc(88px + env(safe-area-inset-bottom, 0px))", right: "16px", zIndex: 9998,
+        <div className="chat-window" style={{
+          position: "fixed", bottom: "calc(92px + env(safe-area-inset-bottom, 0px))", right: "16px", zIndex: 9998,
           width: "360px", maxWidth: "calc(100vw - 32px)",
           maxHeight: "calc(100svh - 120px - env(safe-area-inset-bottom, 0px))",
           background: "var(--surface)", border: "1px solid var(--border)",
@@ -286,6 +300,7 @@ export default function ChatWidget() {
 
       {/* Floating button */}
       <button
+        className="chat-btn"
         onClick={() => setOpen((v) => !v)}
         style={{
           position: "fixed", bottom: "calc(24px + env(safe-area-inset-bottom, 0px))", right: "16px", zIndex: 9999,
