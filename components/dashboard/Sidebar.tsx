@@ -17,6 +17,7 @@ import {
   LogOut,
   UserCog,
   ScrollText,
+  CalendarRange,
 } from "lucide-react";
 
 const ICONS: Record<string, React.ElementType> = {
@@ -24,6 +25,7 @@ const ICONS: Record<string, React.ElementType> = {
   Appointments: CalendarDays,
   "Book Appointment": CalendarPlus,
   "My Schedule": CalendarClock,
+  Schedule: CalendarRange,
   Dentists: Users,
   Services: Scissors,
   Settings: Settings2,
@@ -38,6 +40,7 @@ const NAV: Record<string, { label: string; href: string }[]> = {
     { label: "Dashboard", href: "/admin/dashboard" },
     { label: "Appointments", href: "/admin/appointments" },
     { label: "Dentists", href: "/admin/dentists" },
+    { label: "Schedule", href: "/admin/schedule" },
     { label: "Receptionists", href: "/admin/receptionists" },
     { label: "Services", href: "/admin/services" },
     { label: "Settings", href: "/admin/settings" },
