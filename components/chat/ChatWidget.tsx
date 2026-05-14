@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { createPortal } from "react-dom";
 
 interface Message {
   id: string;
@@ -56,11 +55,8 @@ export default function ChatWidget() {
   ]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (open) {
@@ -92,9 +88,7 @@ export default function ChatWidget() {
     }, 1200);
   }
 
-  if (!mounted) return null;
-
-  return createPortal(
+  return (
     <>
       <style>{`
         @keyframes chatBounce {
@@ -325,7 +319,6 @@ export default function ChatWidget() {
           </svg>
         )}
       </button>
-    </>,
-    document.body
+    </>
   );
 }
