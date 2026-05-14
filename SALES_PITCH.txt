@@ -215,18 +215,75 @@ from a dashboard, fully secure and RA 10173 compliant."
 
 
 ----------------------------------------------------------------
-12. PRICING SUMMARY
+12. PRICING TIERS
 ----------------------------------------------------------------
 
-Starter   — ₱15,000 setup + ₱1,500/mo (1 dentist, basic)
-Standard  — ₱20,000 setup + ₱2,000/mo (up to 5 dentists)
-Premium   — ₱25,000 setup + ₱2,500/mo (priority support,
-                                         custom branding)
+STARTER — ₱15,000 setup + ₱1,500/month
+  - 1 dentist
+  - Online patient booking
+  - Email confirmations
+  - Admin dashboard
+  - Custom domain
+  - Email support
 
-Your monthly costs per client: ~₱120/mo
-Your margin: nearly 100% after setup
+STANDARD — ₱20,000 setup + ₱2,000/month  ← RECOMMENDED
+  - Up to 5 dentists
+  - Everything in Starter
+  - Google Calendar sync
+  - Receptionist manual booking
+  - Schedule & holiday management
+  - Audit logging
 
-10 clients = ₱200,000 setup + ₱20,000/month recurring
+PREMIUM — ₱25,000 setup + ₱2,500/month
+  - Unlimited dentists
+  - Everything in Standard
+  - Priority support (same-day response)
+  - Custom color/branding adjustments
+  - Quarterly feature updates
+
+First client discount: ₱15,000 setup (any tier) + testimonial
+
+
+----------------------------------------------------------------
+13. MONTHLY FEE BREAKDOWN (what ₱2,000/mo covers)
+----------------------------------------------------------------
+
+What the clinic pays monthly:          ₱2,000
+What it actually costs you monthly:
+  - Domain (amortized):                  ₱67
+  - Vercel hosting:                      Free
+  - Supabase (free tier):                Free
+  - Azure Key Vault:                     ₱50
+  - Total cost:                         ~₱120
+  ----------------------------------------
+  Your monthly profit per client:      ~₱1,880
+
+Revenue projections:
+  5 clients  = ₱9,400/month recurring
+  10 clients = ₱18,800/month recurring
+  20 clients = ₱37,600/month recurring
+
+Cost to clinic per booking (est. 100 bookings/mo):  ₱20/booking
+Cost to clinic per booking (est. 200 bookings/mo):  ₱10/booking
+
+That's cheaper than one missed call.
+
+
+----------------------------------------------------------------
+14. VALUE COMPARISON FOR CLINIC
+----------------------------------------------------------------
+
+                        Manual (Phone)    This System
+Bookings after hours:       ❌                ✅
+Confirmation email:         ❌                ✅
+Double booking risk:        High              Zero
+Receptionist time saved:    0 hrs          2–4 hrs/week
+Patient no-shows:           High           Lower (reminders)
+Monthly cost:               ₱0            ₱2,000
+
+"You're not paying ₱2,000 for software.
+ You're paying ₱2,000 to never miss a booking again."
+
 
 ================================================================
 END OF SALES PITCH
