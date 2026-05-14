@@ -115,8 +115,9 @@ export default function ChatWidget() {
       {/* Chat window */}
       {open && (
         <div style={{
-          position: "fixed", bottom: "88px", right: "24px", zIndex: 9998,
-          width: "360px", maxWidth: "calc(100vw - 48px)",
+          position: "fixed", bottom: "88px", right: "16px", zIndex: 9998,
+          width: "360px", maxWidth: "calc(100vw - 32px)",
+          maxHeight: "calc(100dvh - 110px)",
           background: "var(--surface)", border: "1px solid var(--border)",
           borderRadius: "1.25rem", boxShadow: "0 24px 64px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08)",
           display: "flex", flexDirection: "column", overflow: "hidden",
@@ -169,7 +170,7 @@ export default function ChatWidget() {
           <div style={{
             flex: 1, overflowY: "auto", padding: "1rem",
             display: "flex", flexDirection: "column", gap: "0.625rem",
-            maxHeight: "340px", minHeight: "200px",
+            minHeight: "0",
           }}>
             {messages.map((msg) => (
               <div
@@ -287,7 +288,7 @@ export default function ChatWidget() {
       <button
         onClick={() => setOpen((v) => !v)}
         style={{
-          position: "fixed", bottom: "24px", right: "24px", zIndex: 9999,
+          position: "fixed", bottom: "24px", right: "16px", zIndex: 9999,
           width: "56px", height: "56px", borderRadius: "50%",
           background: open ? "var(--sidebar-bg)" : "var(--accent)",
           border: "none", cursor: "pointer",
