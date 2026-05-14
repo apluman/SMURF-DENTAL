@@ -211,8 +211,8 @@ export default function ChatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Suggestion chips */}
-          {messages.length <= 1 && (
+          {/* Suggestion chips — show after every bot reply */}
+          {!thinking && messages[messages.length - 1]?.role === "bot" && (
             <div style={{
               padding: "0 1rem 0.75rem",
               display: "flex", flexWrap: "wrap", gap: "0.375rem",
