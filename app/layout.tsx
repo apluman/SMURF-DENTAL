@@ -22,6 +22,11 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Smurf Dental Clinic",
   description: "Expert dental care, beautifully delivered.",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    viewportFit: "cover",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

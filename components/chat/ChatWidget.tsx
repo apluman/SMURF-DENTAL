@@ -115,9 +115,9 @@ export default function ChatWidget() {
       {/* Chat window */}
       {open && (
         <div style={{
-          position: "fixed", bottom: "88px", right: "16px", zIndex: 9998,
+          position: "fixed", bottom: "calc(88px + env(safe-area-inset-bottom, 0px))", right: "16px", zIndex: 9998,
           width: "360px", maxWidth: "calc(100vw - 32px)",
-          maxHeight: "calc(100dvh - 110px)",
+          maxHeight: "calc(100svh - 120px - env(safe-area-inset-bottom, 0px))",
           background: "var(--surface)", border: "1px solid var(--border)",
           borderRadius: "1.25rem", boxShadow: "0 24px 64px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08)",
           display: "flex", flexDirection: "column", overflow: "hidden",
@@ -288,7 +288,7 @@ export default function ChatWidget() {
       <button
         onClick={() => setOpen((v) => !v)}
         style={{
-          position: "fixed", bottom: "24px", right: "16px", zIndex: 9999,
+          position: "fixed", bottom: "calc(24px + env(safe-area-inset-bottom, 0px))", right: "16px", zIndex: 9999,
           width: "56px", height: "56px", borderRadius: "50%",
           background: open ? "var(--sidebar-bg)" : "var(--accent)",
           border: "none", cursor: "pointer",
