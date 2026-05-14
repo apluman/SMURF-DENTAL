@@ -8,6 +8,7 @@ const SECRET_MAP: Record<string, string> = {
   "SMTP-PASS":                  "SMTP_PASS",
   "ENCRYPTION-KEY":             "ENCRYPTION_KEY",
   "UPSTASH-REDIS-REST-TOKEN":   "UPSTASH_REDIS_REST_TOKEN",
+  "GEMINI-API-KEY":             "GEMINI_API_KEY",
 };
 
 let loaded = false;

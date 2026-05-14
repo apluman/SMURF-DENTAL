@@ -17,16 +17,7 @@ const SUGGESTIONS = [
   "Do you accept PhilHealth?",
 ];
 
-const MOCK_RESPONSES: Record<string, string> = {
-  "What services do you offer?":
-    "We offer a full range of dental services including general check-ups, cleaning, tooth extraction, fillings, orthodontics (braces), veneers, teeth whitening, and root canal treatment. You can view all services and pricing when you book an appointment.",
-  "How do I book an appointment?":
-    "Booking is easy! Click the 'Book an Appointment' button on the home page, choose your preferred dentist and service, pick a date and time, and you're all set. You'll receive a confirmation email once your appointment is reviewed.",
-  "What are your clinic hours?":
-    "Our clinic is open Monday to Saturday, 9:00 AM – 6:00 PM. We are closed on Sundays and public holidays. Same-day appointments may be available — book early to secure a slot!",
-  "Do you accept PhilHealth?":
-    "Yes, we accept PhilHealth for eligible procedures. Please bring your PhilHealth ID and MDR on your appointment day. For specific coverage questions, feel free to call us directly.",
-};
+type GeminiHistory = { role: "user" | "model"; parts: { text: string }[] }[];
 
 function TypingIndicator() {
   return (
@@ -55,6 +46,7 @@ export default function ChatWidget() {
       text: "Hi! I'm the Smurf Dental assistant 👋 How can I help you today?",
     },
   ]);
+  const [geminiHistory, setGeminiHistory] = useState<GeminiHistory>([]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -73,7 +65,7 @@ export default function ChatWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, thinking]);
 
-  function sendMessage(text: string) {
+  async function sendMessage(text: string) {
     if (!text.trim() || thinking) return;
 
     const userMsg: Message = { id: Date.now().toString(), role: "user", text: text.trim() };
@@ -81,16 +73,32 @@ export default function ChatWidget() {
     setInput("");
     setThinking(true);
 
-    setTimeout(() => {
-      const response =
-        MOCK_RESPONSES[text.trim()] ??
-        "Thanks for your question! For detailed information, please call us or book a consultation — our staff will be happy to assist you.";
-      setThinking(false);
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text.trim(), history: geminiHistory }),
+      });
+      const data = await res.json() as { text?: string; error?: string };
+      const reply = data.text ?? "Sorry, I couldn't get a response. Please try again.";
+
+      setGeminiHistory((h) => [
+        ...h,
+        { role: "user", parts: [{ text: text.trim() }] },
+        { role: "model", parts: [{ text: reply }] },
+      ]);
       setMessages((m) => [
         ...m,
-        { id: (Date.now() + 1).toString(), role: "bot", text: response },
+        { id: (Date.now() + 1).toString(), role: "bot", text: reply },
       ]);
-    }, 1200);
+    } catch {
+      setMessages((m) => [
+        ...m,
+        { id: (Date.now() + 1).toString(), role: "bot", text: "Something went wrong. Please try again." },
+      ]);
+    } finally {
+      setThinking(false);
+    }
   }
 
   if (!mounted) return null;
@@ -111,6 +119,10 @@ export default function ChatWidget() {
           70%  { transform: scale(1.08); }
           100% { transform: scale(1); opacity: 1; }
         }
+        @keyframes chipsFadeIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
       `}</style>
 
       {/* Chat window */}
@@ -118,6 +130,7 @@ export default function ChatWidget() {
         <div style={{
           position: "fixed", bottom: "88px", right: "24px", zIndex: 9998,
           width: "360px", maxWidth: "calc(100vw - 48px)",
+          height: "520px", maxHeight: "calc(100vh - 112px)",
           background: "var(--surface)", border: "1px solid var(--border)",
           borderRadius: "1.25rem", boxShadow: "0 24px 64px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08)",
           display: "flex", flexDirection: "column", overflow: "hidden",
@@ -170,7 +183,6 @@ export default function ChatWidget() {
           <div style={{
             flex: 1, overflowY: "auto", padding: "1rem",
             display: "flex", flexDirection: "column", gap: "0.625rem",
-            maxHeight: "340px", minHeight: "200px",
           }}>
             {messages.map((msg) => (
               <div
@@ -212,26 +224,39 @@ export default function ChatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Suggestion chips */}
-          {messages.length <= 1 && (
-            <div style={{
-              padding: "0 1rem 0.75rem",
-              display: "flex", flexWrap: "wrap", gap: "0.375rem",
-            }}>
-              {SUGGESTIONS.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => sendMessage(s)}
-                  style={{
-                    padding: "0.375rem 0.75rem", borderRadius: "999px",
-                    border: "1px solid var(--border)", background: "var(--bg)",
-                    color: "var(--ink)", fontSize: "0.75rem", cursor: "pointer",
-                    fontWeight: 500, transition: "all 0.15s",
-                  }}
-                >
-                  {s}
-                </button>
-              ))}
+          {/* Suggestion chips — reappear after every bot reply */}
+          {!thinking && messages[messages.length - 1]?.role === "bot" && (
+            <div
+              key={messages.length}
+              style={{
+                padding: "0 1rem 0.875rem",
+                animation: "chipsFadeIn 0.3s ease-out",
+              }}
+            >
+              <p style={{
+                fontSize: "0.6875rem", fontWeight: 600, color: "var(--ink-muted)",
+                textTransform: "uppercase", letterSpacing: "0.06em",
+                marginBottom: "0.5rem", opacity: 0.6,
+              }}>
+                Quick questions
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
+                {SUGGESTIONS.map((s, i) => (
+                  <button
+                    key={s}
+                    onClick={() => sendMessage(s)}
+                    style={{
+                      padding: "0.375rem 0.75rem", borderRadius: "999px",
+                      border: "1px solid var(--border)", background: "var(--bg)",
+                      color: "var(--ink)", fontSize: "0.75rem", cursor: "pointer",
+                      fontWeight: 500,
+                      animation: `chipsFadeIn 0.3s ease-out ${i * 0.05}s both`,
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 

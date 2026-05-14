@@ -49,7 +49,12 @@ export async function loginAction(email: string, password: string) {
   const supabase = await createClient();
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: error.message };
+  if (error) {
+    if (error.message.toLowerCase().includes("email not confirmed")) {
+      return { emailNotVerified: true, email };
+    }
+    return { error: error.message };
+  }
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Authentication failed." };
@@ -64,4 +69,16 @@ export async function loginAction(email: string, password: string) {
   const role = profile?.role ?? "patient";
   await auditLog({ userId: user.id, action: "auth.login", metadata: { role } });
   redirect(`/${role}/dashboard`);
+}
+
+export async function resendVerificationAction(email: string): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const redirectTo = `${getSiteUrl()}/auth/callback?next=/patient/dashboard`;
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: { emailRedirectTo: redirectTo },
+  });
+  if (error) return { error: error.message };
+  return {};
 }
