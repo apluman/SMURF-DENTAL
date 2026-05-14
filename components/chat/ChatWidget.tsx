@@ -296,6 +296,7 @@ export default function ChatWidget() {
       <button
         className="chat-btn"
         onClick={() => setOpen((v) => !v)}
+        onTouchEnd={(e) => { e.preventDefault(); setOpen((v) => !v); }}
         style={{
           position: "fixed", bottom: "calc(24px + env(safe-area-inset-bottom, 0px))", right: "16px", zIndex: 9999,
           width: "56px", height: "56px", borderRadius: "50%",
@@ -305,6 +306,7 @@ export default function ChatWidget() {
           display: "flex", alignItems: "center", justifyContent: "center",
           transition: "background 0.2s, transform 0.2s",
           animation: "chatPop 0.3s ease-out",
+          touchAction: "manipulation", WebkitTapHighlightColor: "transparent",
         }}
         aria-label={open ? "Close chat" : "Open chat"}
       >
