@@ -17,6 +17,7 @@ function ToothIcon({ className, style }: { className?: string; style?: React.CSS
 
 export default function HomePage() {
   return (
+    <>
     <main className="min-h-screen flex flex-col lg:flex-row" style={{ background: "var(--bg)" }}>
 
       {/* Left panel — dark, full width on mobile */}
@@ -206,7 +207,8 @@ export default function HomePage() {
         </div>
       </div>
 
-      <ChatWidget />
     </main>
+    <ChatWidget />
+    </>
   );
 }
