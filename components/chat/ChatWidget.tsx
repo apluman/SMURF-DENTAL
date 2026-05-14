@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 interface Message {
   id: string;
@@ -55,8 +56,11 @@ export default function ChatWidget() {
   ]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (open) {
@@ -88,7 +92,9 @@ export default function ChatWidget() {
     }, 1200);
   }
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <>
       <style>{`
         @keyframes chatBounce {
@@ -104,28 +110,14 @@ export default function ChatWidget() {
           70%  { transform: scale(1.08); }
           100% { transform: scale(1); opacity: 1; }
         }
-        .chat-btn {
-          bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
-        }
-        .chat-window {
-          bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important;
-        }
-        @media (max-width: 768px) {
-          .chat-btn {
-            bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
-          }
-          .chat-window {
-            bottom: calc(148px + env(safe-area-inset-bottom, 0px)) !important;
-          }
-        }
       `}</style>
 
       {/* Chat window */}
       {open && (
-        <div className="chat-window" style={{
-          position: "fixed", bottom: "calc(92px + env(safe-area-inset-bottom, 0px))", right: "16px", zIndex: 9998,
+        <div style={{
+          position: "fixed", bottom: "88px", right: "16px", zIndex: 9998,
           width: "360px", maxWidth: "calc(100vw - 32px)",
-          maxHeight: "calc(100svh - 120px - env(safe-area-inset-bottom, 0px))",
+          maxHeight: "calc(100dvh - 110px)",
           background: "var(--surface)", border: "1px solid var(--border)",
           borderRadius: "1.25rem", boxShadow: "0 24px 64px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08)",
           display: "flex", flexDirection: "column", overflow: "hidden",
@@ -294,11 +286,9 @@ export default function ChatWidget() {
 
       {/* Floating button */}
       <button
-        className="chat-btn"
         onClick={() => setOpen((v) => !v)}
-        onTouchEnd={(e) => { e.preventDefault(); setOpen((v) => !v); }}
         style={{
-          position: "fixed", bottom: "calc(24px + env(safe-area-inset-bottom, 0px))", right: "16px", zIndex: 9999,
+          position: "fixed", bottom: "24px", right: "16px", zIndex: 9999,
           width: "56px", height: "56px", borderRadius: "50%",
           background: open ? "var(--sidebar-bg)" : "var(--accent)",
           border: "none", cursor: "pointer",
@@ -306,7 +296,6 @@ export default function ChatWidget() {
           display: "flex", alignItems: "center", justifyContent: "center",
           transition: "background 0.2s, transform 0.2s",
           animation: "chatPop 0.3s ease-out",
-          touchAction: "manipulation", WebkitTapHighlightColor: "transparent",
         }}
         aria-label={open ? "Close chat" : "Open chat"}
       >
@@ -321,6 +310,7 @@ export default function ChatWidget() {
           </svg>
         )}
       </button>
-    </>
+    </>,
+    document.body
   );
 }
