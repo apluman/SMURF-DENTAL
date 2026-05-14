@@ -1,0 +1,233 @@
+================================================================
+SMURF DENTAL — SALES PITCH & SCRIPTS
+================================================================
+Product: Online Appointment Booking System for Dental Clinics
+Live Demo: https://smurf-dental.vercel.app
+Pricing: ₱20,000 setup + ₱2,000/month (first client: ₱15,000 setup)
+================================================================
+
+
+----------------------------------------------------------------
+1. FIRST MESSAGE (Messenger / Facebook DM)
+----------------------------------------------------------------
+
+Hi! I'm a developer based in the Philippines and I built a
+complete online appointment booking system designed specifically
+for dental clinics.
+
+Here's what it does for your clinic:
+
+- Patients book 24/7 — no more missed calls after hours
+- Auto-confirmation emails sent to the patient instantly
+- Multi-dentist support — each dentist has their own schedule
+- Full admin dashboard — manage appointments, dentists, services
+- Walk-in & phone bookings — receptionist adds them manually too
+- Google Calendar sync — dentists see their schedule automatically
+- Secure & RA 10173 compliant — patient data protected by law
+
+It's fully customized for your clinic — your name, your services,
+your domain, your branding.
+
+Here's a live demo: https://smurf-dental.vercel.app
+
+Setup takes 3 days and I handle everything.
+Would you like to see how it looks with your clinic's name on it?
+
+
+----------------------------------------------------------------
+2. FOLLOW-UP (No reply after 3 days)
+----------------------------------------------------------------
+
+Hi again! Just following up on the booking system I shared.
+A lot of clinics lose patients simply because they can't book
+after hours or don't get a quick response.
+
+This solves that automatically — and setup is done in 3 days.
+
+Happy to answer any questions or do a quick personal demo.
+
+
+----------------------------------------------------------------
+3. WHEN THEY ASK HOW MUCH
+----------------------------------------------------------------
+
+Setup is ₱20,000 — I configure everything with your clinic name,
+services, dentists, and your own domain. That includes any
+customizations you need. After that it's ₱2,000 a month for
+hosting, support, and updates.
+
+For my first client I can do ₱15,000 setup in exchange for a
+short testimonial.
+
+
+----------------------------------------------------------------
+4. WHAT'S INCLUDED
+----------------------------------------------------------------
+
+- Patients book online 24/7 — no more missed calls
+- Automatic email confirmation sent to the patient
+- Admin dashboard — manage appointments, dentists, schedules
+- Receptionist can add walk-in and phone bookings manually
+- Works on mobile and desktop
+- Your own domain (e.g. yourclinic.com.ph)
+- Google Calendar sync for dentists
+- RA 10173 compliant — patient data is protected
+- Fully customizable — services, pricing, clinic hours, dentists
+
+"This is built to fit your clinic — not the other way around."
+
+
+----------------------------------------------------------------
+5. WHEN THEY ASK WHAT CAN BE CUSTOMIZED
+----------------------------------------------------------------
+
+Pretty much everything:
+
+- Your services and pricing list
+- Number of dentists and their schedules
+- Clinic hours and holidays
+- Your clinic name and domain
+- Email notifications sent under your clinic's name
+- Any specific feature your clinic needs
+
+If you have something specific in mind, just tell me and
+we can talk about it.
+
+
+----------------------------------------------------------------
+6. WHEN THEY ASK ABOUT SECURITY
+----------------------------------------------------------------
+
+Security was a top priority when building this:
+
+- Passwords hashed — we never store plain passwords
+- Role-based access — admin, dentist, receptionist, and patient
+  each see only what they are supposed to see
+- Email verification — every new account must verify their email
+  before logging in
+- Encrypted data — sensitive information encrypted at rest
+  using AES-256
+- Rate limiting — login attempts blocked after repeated failures
+  to prevent brute force attacks
+- Audit logging — every action is logged (who did what and when)
+- HTTPS only — all data transmitted securely
+- RA 10173 compliant — built following the Philippine Data
+  Privacy Act
+
+Patient data stays protected. You stay compliant.
+
+
+----------------------------------------------------------------
+7. HANDLING PUSHBACKS
+----------------------------------------------------------------
+
+"Mahal naman / Too expensive"
+→ Think about how many missed bookings happen in a month from
+  unanswered calls. This pays for itself with 1-2 extra patients
+  a month. ₱2,000/month is less than one tooth cleaning.
+  (Offer ₱15,000 setup if they still push back)
+
+"We already use Facebook"
+→ Facebook is great for reach but it's not a booking system.
+  You're still manually confirming every message. This automates
+  that. Patients pick their slot, get a confirmation email, and
+  you see it in the dashboard instantly. No back and forth.
+
+"Our patients aren't tech-savvy"
+→ Booking takes less than 2 minutes on a phone. And for patients
+  who call or walk in, your receptionist adds them manually in
+  the dashboard. Both work.
+
+"We don't have a website"
+→ This IS your website. It comes with a landing page patients
+  visit directly. Your domain, your clinic name, your services —
+  complete out of the box.
+
+"What if it breaks? Who fixes it?"
+→ That's what the monthly fee covers. If anything breaks, you
+  message me and I fix it. The system runs on enterprise
+  infrastructure with 99.9% uptime.
+
+"Can we try it first?"
+→ You can explore the full demo at smurf-dental.vercel.app right
+  now — that's exactly what you get. If after setup you're not
+  happy within 30 days, we can talk.
+
+"We're a small clinic"
+→ This is built for small clinics. Even 5 bookings a day means
+  5 patients get a professional experience and you spend zero
+  time on the phone confirming them.
+
+"I'll think about it / I'll ask my partner"
+→ Of course! Would it help if I sent a summary you can share
+  with them? Or I can do a quick demo with both of you together —
+  even over Messenger video call.
+  (Follow up in 3 days)
+
+
+----------------------------------------------------------------
+8. CLOSING THE DEAL
+----------------------------------------------------------------
+
+"Setup takes 3 days. I'll set everything up with your clinic
+name, your services, and your domain. Setup is ₱20,000 and
+₱2,000 a month after that. For the first clinic I work with,
+I can do ₱15,000 setup in exchange for a short testimonial."
+
+Ask for 50% downpayment (₱7,500–₱10,000) to start.
+
+
+----------------------------------------------------------------
+9. VIDEO DM SCRIPT (30 seconds)
+----------------------------------------------------------------
+
+"Hi! I built an online booking system for dental clinics here
+in the Philippines. Patients book appointments 24/7 from their
+phone, the clinic gets instant confirmations, and everything is
+managed from a clean dashboard. It's secure, RA 10173 compliant,
+and fully set up with your clinic's name and domain in 3 days.
+Here's the live demo link — take a look and let me know if you
+have questions!"
+
+
+----------------------------------------------------------------
+10. THE ONE-LINER
+----------------------------------------------------------------
+
+"I build online booking systems for dental clinics in the
+Philippines — patients book online, clinics manage everything
+from a dashboard, fully secure and RA 10173 compliant."
+
+
+----------------------------------------------------------------
+11. ONBOARDING CHECKLIST (per client)
+----------------------------------------------------------------
+
+[ ] Deploy new Vercel project for the client
+[ ] Create new Supabase project (isolated data)
+[ ] Set up custom domain on dot.ph
+[ ] Configure clinic settings (name, address, hours, services)
+[ ] Add dentists and their schedules
+[ ] Configure SMTP with clinic email
+[ ] Update NEXT_PUBLIC_SITE_URL in Vercel env vars
+[ ] Hand over admin credentials
+[ ] 30-minute walkthrough over Zoom or Messenger video call
+
+
+----------------------------------------------------------------
+12. PRICING SUMMARY
+----------------------------------------------------------------
+
+Starter   — ₱15,000 setup + ₱1,500/mo (1 dentist, basic)
+Standard  — ₱20,000 setup + ₱2,000/mo (up to 5 dentists)
+Premium   — ₱25,000 setup + ₱2,500/mo (priority support,
+                                         custom branding)
+
+Your monthly costs per client: ~₱120/mo
+Your margin: nearly 100% after setup
+
+10 clients = ₱200,000 setup + ₱20,000/month recurring
+
+================================================================
+END OF SALES PITCH
+================================================================
