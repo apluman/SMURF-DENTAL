@@ -7,6 +7,7 @@ import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 import { loginAction, resendVerificationAction } from "@/app/actions/auth";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export default function LoginForm() {
@@ -102,13 +103,9 @@ export default function LoginForm() {
     );
   }
 
-  const handleSubmitClick = () => {
-    form.handleSubmit(onSubmit)();
-  };
-
   return (
     <Form {...form}>
-      <form onSubmit={(e) => { e.preventDefault(); form.handleSubmit(onSubmit)(e); }} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="email"
@@ -116,7 +113,7 @@ export default function LoginForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="you@example.com" autoComplete="email" {...field} />
+                <Input type="email" placeholder="you@example.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -129,30 +126,15 @@ export default function LoginForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" autoComplete="current-password" {...field} />
+                <Input type="password" placeholder="••••••••" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <button
-          type="button"
-          onClick={handleSubmitClick}
-          onTouchEnd={(e) => { e.preventDefault(); handleSubmitClick(); }}
-          disabled={form.formState.isSubmitting}
-          style={{
-            width: "100%", padding: "0.625rem 1rem",
-            background: form.formState.isSubmitting ? "var(--accent-hover)" : "var(--accent)",
-            color: "white", border: "none", borderRadius: "0.5rem",
-            fontSize: "0.875rem", fontWeight: 600,
-            cursor: form.formState.isSubmitting ? "not-allowed" : "pointer",
-            opacity: form.formState.isSubmitting ? 0.7 : 1,
-            touchAction: "manipulation",
-            WebkitTapHighlightColor: "transparent",
-          } as React.CSSProperties}
-        >
+        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting ? "Signing in..." : "Sign In"}
-        </button>
+        </Button>
       </form>
     </Form>
   );
